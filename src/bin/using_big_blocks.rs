@@ -1,6 +1,7 @@
 use alloy::signers::local::PrivateKeySigner;
 use hyperliquid_rust_sdk::{BaseUrl, ExchangeClient};
 use log::info;
+use std::sync::Arc;
 
 #[tokio::main]
 async fn main() {
@@ -11,13 +12,18 @@ async fn main() {
             .parse()
             .unwrap();
 
-    let exchange_client =
-        ExchangeClient::new(None, wallet.clone(), Some(BaseUrl::Testnet), None, None)
-            .await
-            .unwrap();
+    let exchange_client = ExchangeClient::new(
+        None,
+        Arc::new(wallet.clone()),
+        Some(BaseUrl::Testnet),
+        None,
+        None,
+    )
+    .await
+    .unwrap();
 
     let res = exchange_client
-        .enable_big_blocks(false, Some(&wallet))
+        .enable_big_blocks(false, Some(Arc::new(wallet)))
         .await
         .unwrap();
     info!("enable big blocks : {res:?}");

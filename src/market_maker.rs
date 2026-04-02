@@ -1,11 +1,13 @@
-use alloy::{primitives::Address, signers::local::PrivateKeySigner};
+use std::sync::Arc;
+
+use alloy::primitives::Address;
 use log::{error, info};
 use tokio::sync::mpsc::unbounded_channel;
 
 use crate::{
     bps_diff, truncate_float, BaseUrl, ClientCancelRequest, ClientLimit, ClientOrder,
-    ClientOrderRequest, ExchangeClient, ExchangeDataStatus, ExchangeResponseStatus, InfoClient,
-    Message, Subscription, UserData, EPSILON,
+    ClientOrderRequest, DynSigner, ExchangeClient, ExchangeDataStatus, ExchangeResponseStatus,
+    InfoClient, Message, Subscription, UserData, EPSILON,
 };
 #[derive(Debug)]
 pub struct MarketMakerRestingOrder {
@@ -14,7 +16,6 @@ pub struct MarketMakerRestingOrder {
     pub price: f64,
 }
 
-#[derive(Debug)]
 pub struct MarketMakerInput {
     pub asset: String,
     pub target_liquidity: f64, // Amount of liquidity on both sides to target
@@ -22,10 +23,9 @@ pub struct MarketMakerInput {
     pub max_bps_diff: u16, // Max deviation before we cancel and put new orders on the book (in BPS)
     pub max_absolute_position_size: f64, // Absolute value of the max position we can take on
     pub decimals: u32,     // Decimals to round to for pricing
-    pub wallet: PrivateKeySigner, // Wallet containing private key
+    pub wallet: Arc<DynSigner>, // Wallet used for signing
 }
 
-#[derive(Debug)]
 pub struct MarketMaker {
     pub asset: String,
     pub target_liquidity: f64,
