@@ -1,13 +1,12 @@
-use std::collections::HashMap;
-
-use alloy::signers::local::PrivateKeySigner;
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, sync::Arc};
 use uuid::Uuid;
 
 use crate::{
     errors::Error,
     helpers::{float_to_string_for_hashing, uuid_to_hex_string},
     prelude::*,
+    DynSigner,
 };
 
 #[derive(Deserialize, Serialize, Clone, Debug)]
@@ -61,7 +60,6 @@ pub struct ClientTrigger {
     pub tpsl: String,
 }
 
-#[derive(Debug)]
 pub struct MarketOrderParams<'a> {
     pub asset: &'a str,
     pub is_buy: bool,
@@ -69,17 +67,16 @@ pub struct MarketOrderParams<'a> {
     pub px: Option<f64>,
     pub slippage: Option<f64>,
     pub cloid: Option<Uuid>,
-    pub wallet: Option<&'a PrivateKeySigner>,
+    pub wallet: Option<Arc<DynSigner>>,
 }
 
-#[derive(Debug)]
 pub struct MarketCloseParams<'a> {
     pub asset: &'a str,
     pub sz: Option<f64>,
     pub px: Option<f64>,
     pub slippage: Option<f64>,
     pub cloid: Option<Uuid>,
-    pub wallet: Option<&'a PrivateKeySigner>,
+    pub wallet: Option<Arc<DynSigner>>,
 }
 
 #[derive(Debug)]

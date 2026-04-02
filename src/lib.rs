@@ -1,4 +1,7 @@
 #![deny(unreachable_pub)]
+
+use alloy::{primitives::Signature, signers::Signer};
+
 mod consts;
 mod eip712;
 mod errors;
@@ -20,3 +23,5 @@ pub use info::{info_client::*, *};
 pub use market_maker::{MarketMaker, MarketMakerInput, MarketMakerRestingOrder};
 pub use meta::{AssetContext, AssetMeta, Meta, MetaAndAssetCtxs, SpotAssetMeta, SpotMeta};
 pub use ws::*;
+
+pub type DynSigner = dyn Signer<Signature> + Send + Sync;
